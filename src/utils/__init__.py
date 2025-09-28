@@ -1,0 +1,1 @@
+from .prepare_embeddings import generate_csv_data
