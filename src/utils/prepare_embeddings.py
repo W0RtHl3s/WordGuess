@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+# If you previously installed spacy, make sure to uninstall/change kernel 'cause it has numpy version conflicts with gensim
+=======
+>>>>>>> 126cfe7 (:tada: :sparkles: Core functionality + initial imports)
 import numpy as np
 from pathlib import Path
 from typing import Union
@@ -5,8 +9,38 @@ import os
 from dotenv import set_key
 from gensim import downloader
 
+<<<<<<< HEAD
+PRESERVED_WORDS = {
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+    "God",
+    "Microsoft" #BUT not Google, idk why
+}
+
 def generate_csv_data(path_to_embeddings: Union[str, os.PathLike] = Path.cwd() / Path("resources/data"),
                     vector_size: int = 300,
+                    vocab_size: int = 40000,
+=======
+def generate_csv_data(path_to_embeddings: Union[str, os.PathLike] = Path.cwd() / Path("resources/data"),
+                    vector_size: int = 300,
+>>>>>>> 126cfe7 (:tada: :sparkles: Core functionality + initial imports)
                     preloaded_data: bool = True,
                     corpus_name: str = "word2vec-google-news-300",
                     single_file: bool = False,
@@ -20,6 +54,10 @@ def generate_csv_data(path_to_embeddings: Union[str, os.PathLike] = Path.cwd() /
     Args:
         path_to_embeddings (Union[str, bytes, os.PathLike], optional): Path to your preloaded embeddings. Defaults to bundled with project embeddings.
         vector_size (int): Size of embedding vectors. Defaults to 300.
+<<<<<<< HEAD
+        vocab_size (int): Size of word vocabulary for the game. Defaults to 40000.
+=======
+>>>>>>> 126cfe7 (:tada: :sparkles: Core functionality + initial imports)
         preloaded_data (bool, optional): Specifies to use word corpus stored locally or download one (by default uses gensim's .load() function and google-news-300 corpus). Defaults to True.
         corpus_name (str, optional): (WARNING! Expects to recieve specific name of corpus to use (options can be viewed using downloader.info()). Defaults to word2vec-google-news-300. 
         single_file (bool, optional): Specifies to use one (see words_single_file.csv in ./resources/csv) or two data files. Defaults to False.
@@ -27,8 +65,13 @@ def generate_csv_data(path_to_embeddings: Union[str, os.PathLike] = Path.cwd() /
         embeddings_filename (Union[str, bytes, os.PathLike], optional): Filename of file containing all embeddings for used words. Defaults to words_embeddings.npy.
     """
 
+<<<<<<< HEAD
+    if vector_size <= 0 or vocab_size <= 0:
+        raise ValueError("Sizes must be positive integers")
+=======
     if vector_size <= 0:
         raise ValueError("Vector size must be positive integer")
+>>>>>>> 126cfe7 (:tada: :sparkles: Core functionality + initial imports)
     
     set_key(Path.cwd() / Path(".env"), "VECTOR_SIZE", str(vector_size))
 
@@ -73,11 +116,32 @@ def generate_csv_data(path_to_embeddings: Union[str, os.PathLike] = Path.cwd() /
         return path_to_csvs / Path('words.csv')
     
     else:
+<<<<<<< HEAD
+        loaded_model = downloader.load(name=corpus_name)
+
+        # Sort words by their frequency 
+        loaded_model.sort_by_descending_frequency()
+        # Filter out some of the words (actually about 1/5 remains)
+        frequent_words = [_ for _ in loaded_model.index_to_key[:vocab_size*10] if (_.isascii()
+                                                                        and _.isalpha()
+                                                                        and len(_) > 1
+                                                                        and _.lower() == _)
+                                                                        or (_ in PRESERVED_WORDS)]
+        # Save generated word vocab
+        with Path(path_to_embeddings / Path("words.txt")).open("w+", encoding="UTF-8") as file:
+            for word in frequent_words[:vocab_size]:
+                file.write(f"{word}\n")
+        # Load generated vocab
+        words = np.loadtxt(Path(path_to_embeddings) / Path(words_filename), dtype=str, encoding='UTF-8')
+        embeddings = np.array([loaded_model[word] for word in words], dtype='float32')
+        np.save(Path(path_to_embeddings / Path("words_embeddings.npy")), embeddings)
+=======
         # Expects to have word vocab in words file
         loaded_model = downloader.load(name=corpus_name)
         words = np.loadtxt(Path(path_to_embeddings) / Path(words_filename), dtype=str, encoding='UTF-8')
         # Loads embeddings for words in vocab
         embeddings = np.array([loaded_model[word] for word in words], dtype='float32')
+>>>>>>> 126cfe7 (:tada: :sparkles: Core functionality + initial imports)
         # embedding array preformatting
         str_embeddings = np.array(["\"" + np.array2string(_, separator=',', sign='-', floatmode='fixed', suppress_small=True, max_line_width=5000, formatter={"float": lambda x: str(x).strip()}) + "\"" for _ in embeddings], dtype=str)
         # word array preformatting
